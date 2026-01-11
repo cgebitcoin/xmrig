@@ -54,6 +54,16 @@ bool xmrig::Job::isEqualBlob(const Job &other) const {
 }
 
 bool xmrig::Job::setBlob(const char *blob) {
+  // [BitMinti] SMOKE TEST
+  // Verify nonceOffset is 76 for RandomX family
+  if (m_algorithm.family() == Algorithm::RANDOM_X ||
+      m_algorithm == Algorithm::RX_0) {
+    size_t off = nonceOffset();
+    printf("[BitMinti Smoke] setBlob called. Algorithm family=RandomX. "
+           "nonceOffset returned: %zu. Expected: 76. Status: %s\n",
+           off, (off == 76) ? "PASS" : "FAIL");
+  }
+
   if (!blob) {
     return false;
   }
