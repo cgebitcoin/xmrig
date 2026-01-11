@@ -311,6 +311,10 @@ template <size_t N> void xmrig::CpuWorker<N>::start() {
         }
         randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(),
                                     m_hash);
+
+        // [BitMinti Debug] Print Calculated Hash (First 8 bytes)
+        uint64_t *h64 = reinterpret_cast<uint64_t *>(m_hash);
+        // Only print if low enough to be interesting (or first run)
         static int debug_count = 0;
         if (debug_count < 5 ||
             (h64[3] == 0)) { // h64[3] is MSB in LE representation?
