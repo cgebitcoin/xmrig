@@ -295,24 +295,7 @@ template <size_t N> void xmrig::CpuWorker<N>::start() {
             printf("\n");
           }
 
-          // [BitMinti Fix] Swap 32-bit words before hashing
-          uint8_t blob_swapped[80];
-          const uint8_t *hash_target_blob = m_job.blob();
-
-          if (job.size() == 80) {
-            memcpy(blob_swapped, m_job.blob(), job.size());
-            uint32_t *p = reinterpret_cast<uint32_t *>(blob_swapped);
-            size_t count = job.size() / 4;
-            for (size_t i = 0; i < count; ++i) {
-              // Swap 32-bit word: AABBCCDD -> DDCCBBAA
-              uint32_t x = p[i];
-              p[i] = ((x & 0xFF000000) >> 24) | ((x & 0x00FF0000) >> 8) |
-                     ((x & 0x0000FF00) << 8) | ((x & 0x000000FF) << 24);
-            }
-            hash_target_blob = blob_swapped;
-          }
-
-          randomx_calculate_hash_first(m_vm, tempHash, hash_target_blob,
+          randomx_calculate_hash_first(m_vm, tempHash, m_job.blob(),
                                        job.size());
         }
 
