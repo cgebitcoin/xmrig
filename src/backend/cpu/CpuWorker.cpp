@@ -308,9 +308,26 @@ template <size_t N> void xmrig::CpuWorker<N>::start() {
                  sizeof(miner_signature_saved));
           job.generateMinerSignature(m_job.blob(), job.size(),
                                      miner_signature_ptr);
+          // [BitMinti] Exact 32-bit Word Swap Implementation
+          // Create local copy of blob to swap
+          uint8_t blob_swapped[80];
+          memcpy(blob_swapped, m_job.blob(),
+                 job.size()); // Assuming 76 or 80 bytes
+
+          // Interpret as uint32 array and swap
+          uint32_t *p32 = reinterpret_cast<uint32_t *>(blob_swapped);
+          size_t count = job.size() / 4;
+          for (size_t i = 0; i < count; ++i) {
+            p32[i] = __builtin_bswap32(p32[i]);
+          }
+
+          // Hash the SWAPPED blob
+          randomx_calculate_hash_next(m_vm, tempHash, blob_swapped, job.size(),
+                                      m_hash);
+        } else {
+          randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(),
+                                      m_hash);
         }
-        randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(),
-                                    m_hash);
 
         // [BitMinti Debug] Print Calculated Hash (First 8 bytes)
         uint64_t *h64 = reinterpret_cast<uint64_t *>(m_hash);
