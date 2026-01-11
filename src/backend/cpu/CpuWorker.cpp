@@ -310,6 +310,15 @@ template <size_t N> void xmrig::CpuWorker<N>::start() {
                                      miner_signature_ptr);
         }
 
+        // [BitMinti Debug] Verbose Blob Printing
+        static int debug_blob_count = 0;
+        if (debug_blob_count < 15) {
+          printf("[BitMinti Debug] Blob BEFORE Swap (First 32 bytes): ");
+          for (int i = 0; i < 32; i++)
+            printf("%02x", ((uint8_t *)m_job.blob())[i]);
+          printf("\n");
+        }
+
         // [BitMinti] Exact 32-bit Word Swap Implementation (Applied to ALL
         // paths) Create local copy of blob to swap
         uint8_t blob_swapped[80];
@@ -321,6 +330,14 @@ template <size_t N> void xmrig::CpuWorker<N>::start() {
         size_t count = job.size() / 4;
         for (size_t i = 0; i < count; ++i) {
           p32[i] = __builtin_bswap32(p32[i]);
+        }
+
+        if (debug_blob_count < 15) {
+          printf("[BitMinti Debug] Blob AFTER Swap  (First 32 bytes): ");
+          for (int i = 0; i < 32; i++)
+            printf("%02x", blob_swapped[i]);
+          printf("\n");
+          debug_blob_count++;
         }
 
         // Hash the SWAPPED blob
