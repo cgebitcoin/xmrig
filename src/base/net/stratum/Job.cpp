@@ -38,8 +38,7 @@
 
 xmrig::Job::Job(bool nicehash, const Algorithm &algorithm,
                 const String &clientId)
-    : m_algorithm(algorithm), m_nicehash(nicehash),
-      m_clientId(clientId) m_clientId(clientId) {
+    : m_algorithm(algorithm), m_nicehash(nicehash), m_clientId(clientId) {
   printf("[BitMinti] Custom Job Initialized (Offset 76)\n");
 }
 
