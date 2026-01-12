@@ -107,18 +107,26 @@ bool xmrig::Job::setSeedHash(const char *hash) {
 
   m_seed = Cvt::fromHex(hash, kMaxSeedSize * 2);
 
-  // [BitMinti] Native Seed Reversal
-  // Daemon sends Big Endian (RPC). RandomX needs Little Endian bytes.
-  // We reverse here so XMRig is "Aligned".
-  if (!m_seed.empty()) {
+  if (!m_seed.empty() && m_seed.size() >= 32) {
     uint8_t *data = m_seed.data();
     size_t len = m_seed.size();
+
+    printf("[BitMinti Job] Received Seed (BE): ");
+    for (size_t i = 0; i < 32; i++)
+      printf("%02x", data[i]);
+    printf("\n");
+
+    // [BitMinti] Native Seed Reversal
     for (size_t i = 0; i < len / 2; ++i) {
       uint8_t temp = data[i];
       data[i] = data[len - 1 - i];
       data[len - 1 - i] = temp;
     }
-    printf("[BitMinti Job] Seed Reversed for Native Alignment.\n");
+
+    printf("[BitMinti Job] Reversed Seed (LE): ");
+    for (size_t i = 0; i < 32; i++)
+      printf("%02x", data[i]);
+    printf("\n");
   }
 
   return !m_seed.empty();
